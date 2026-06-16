@@ -17,6 +17,7 @@ const errorState = document.getElementById('error-state');
 const errorMessage = document.getElementById('error-message');
 const emptyState = document.getElementById('empty-state');
 const refreshBtn = document.getElementById('refresh-btn');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 const retryBtn = document.getElementById('retry-btn');
 const resetFiltersBtn = document.getElementById('reset-filters-btn');
 const searchInput = document.getElementById('search-input');
@@ -57,8 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event Listeners Setup
 function setupEventListeners() {
-    // Refresh & Retry buttons
+    // Refresh, Export & Retry buttons
     refreshBtn.addEventListener('click', () => fetchNotes(true));
+    exportCsvBtn.addEventListener('click', exportFilteredNotesToCSV);
     retryBtn.addEventListener('click', () => fetchNotes(true));
     resetFiltersBtn.addEventListener('click', resetFilters);
 
@@ -277,6 +279,10 @@ function renderTimeline() {
                     ${note.content_html}
                 </div>
                 <div class="card-actions">
+                    <button class="copy-card-btn" data-id="${note.id}">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copy</span>
+                    </button>
                     <button class="share-tweet-btn" data-id="${note.id}">
                         <i class="fa-brands fa-x-twitter"></i>
                         <span>Share on X</span>
@@ -286,6 +292,37 @@ function renderTimeline() {
         `;
         
         notesTimeline.appendChild(item);
+    });
+
+    // Add click listeners to copy buttons
+    document.querySelectorAll('.copy-card-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const noteId = btn.dataset.id;
+            const note = appState.notes.find(n => n.id === noteId);
+            if (note) {
+                try {
+                    await navigator.clipboard.writeText(note.content_text);
+                    showToast('Copied update details!');
+                    
+                    const btnSpan = btn.querySelector('span');
+                    const btnIcon = btn.querySelector('i');
+                    const oldText = btnSpan.textContent;
+                    const oldIconClass = btnIcon.className;
+                    
+                    btnSpan.textContent = 'Copied!';
+                    btnIcon.className = 'fa-solid fa-check';
+                    btn.classList.add('success');
+                    
+                    setTimeout(() => {
+                        btnSpan.textContent = oldText;
+                        btnIcon.className = oldIconClass;
+                        btn.classList.remove('success');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy card details: ', err);
+                }
+            }
+        });
     });
 
     // Add click listeners to share buttons
@@ -486,4 +523,48 @@ function showToast(message) {
             toast.style.animation = ''; // Reset animation
         }, 200);
     }, 2500);
+}
+
+// Export current filtered release notes to CSV format
+function exportFilteredNotesToCSV() {
+    if (appState.filteredNotes.length === 0) {
+        showToast('No notes available to export.');
+        return;
+    }
+    
+    // Prepare headers
+    const headers = ['Date', 'Type', 'Description', 'Link'];
+    
+    // Convert rows
+    const rows = appState.filteredNotes.map(note => {
+        // Escape content text quotes: replace " with ""
+        const cleanDesc = note.content_text.replace(/"/g, '""');
+        return [
+            `"${note.date}"`,
+            `"${note.type}"`,
+            `"${cleanDesc}"`,
+            `"${note.link}"`
+        ].join(',');
+    });
+    
+    // Join all together
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    // Format timestamp for filename
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `bigquery_release_notes_${dateStr}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast('CSV export downloaded!');
 }
