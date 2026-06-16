@@ -1092,3 +1092,209 @@ body {
         gap: 0.4rem;
     }
 }
+
+/* ==========================================
+   Light Mode & Theme Toggle Switch Styling
+   ========================================== */
+
+/* Theme Toggle Switch */
+.theme-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-right: 0.75rem;
+}
+
+.theme-icon {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    transition: var(--transition-fast);
+}
+
+.theme-icon.active {
+    color: var(--color-primary);
+    text-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #374151;
+    transition: var(--transition-fast);
+}
+
+body.light-theme .slider {
+    background-color: #cbd5e1;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: var(--transition-fast);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+input:checked + .slider {
+    background-color: var(--color-primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(18px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Light Theme Variables & Overrides */
+body.light-theme {
+    --bg-dark: #f3f4f6;
+    --bg-panel: rgba(255, 255, 255, 0.75);
+    --bg-panel-solid: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-card-hover: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(209, 213, 219, 0.8);
+    --border-color-active: rgba(99, 102, 241, 0.5);
+    
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
+    
+    --color-primary-glow: rgba(99, 102, 241, 0.08);
+}
+
+/* Light Theme Specific Element Adjustments */
+body.light-theme .glow-bg {
+    opacity: 0.15;
+}
+
+body.light-theme .logo-text h1 {
+    background: linear-gradient(to right, #111827, #374151);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-theme .hero-content h2 {
+    background: linear-gradient(135deg, #111827 30%, #4f46e5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-theme .search-box input {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #111827;
+    border-color: rgba(209, 213, 219, 0.8);
+}
+
+body.light-theme .search-box input:focus {
+    border-color: var(--color-primary);
+}
+
+body.light-theme .filter-pill {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+body.light-theme .filter-pill:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+body.light-theme .pill-count {
+    background: rgba(229, 231, 235, 0.8);
+    color: #4b5563;
+}
+
+body.light-theme .filter-pill.active .pill-count {
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--color-primary);
+}
+
+body.light-theme ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+}
+
+body.light-theme ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Modal and Editor in Light Theme */
+body.light-theme .modal-card {
+    background-color: #ffffff;
+    border-color: rgba(229, 231, 235, 1);
+}
+
+body.light-theme .tweet-editor textarea {
+    background-color: rgba(243, 244, 246, 0.8);
+    color: #111827;
+    border-color: rgba(209, 213, 219, 0.8);
+}
+
+body.light-theme .modal-footer {
+    background-color: rgba(243, 244, 246, 0.4);
+}
+
+body.light-theme .tmpl-btn {
+    background-color: rgba(243, 244, 246, 0.8);
+}
+
+body.light-theme .tmpl-btn:hover {
+    background-color: rgba(229, 231, 235, 0.8);
+}
+
+body.light-theme .tmpl-btn.active {
+    background-color: rgba(99, 102, 241, 0.1);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+body.light-theme .btn-tweet {
+    background-color: #111827;
+    color: #ffffff;
+}
+
+body.light-theme .btn-tweet:hover {
+    background-color: #1f2937;
+}
+
+body.light-theme .toast {
+    background-color: #ffffff;
+    color: #111827;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+body.light-theme .toast-message {
+    color: #111827;
+}
+
+body.light-theme .copy-card-btn, body.light-theme .share-tweet-btn {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+body.light-theme .copy-card-btn:hover, body.light-theme .share-tweet-btn:hover {
+    background: rgba(243, 244, 246, 0.8);
+}

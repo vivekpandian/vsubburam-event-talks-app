@@ -44,6 +44,11 @@ const postTweetBtn = document.getElementById('post-tweet-btn');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
 
+// Theme Switch Elements
+const themeToggle = document.getElementById('theme-toggle');
+const darkIcon = document.getElementById('dark-icon');
+const lightIcon = document.getElementById('light-icon');
+
 // Progress Ring calculation
 const circleRadius = 14;
 const circleCircumference = 2 * Math.PI * circleRadius;
@@ -52,6 +57,7 @@ charProgressCircle.style.strokeDashoffset = circleCircumference;
 
 // Initialize the Application
 document.addEventListener('DOMContentLoaded', () => {
+    initializeTheme();
     fetchNotes(false);
     setupEventListeners();
 });
@@ -95,6 +101,11 @@ function setupEventListeners() {
     // Copy & Post buttons
     copyTweetBtn.addEventListener('click', copyTweetToClipboard);
     postTweetBtn.addEventListener('click', postTweetToX);
+
+    // Theme Switch Event
+    if (themeToggle) {
+        themeToggle.addEventListener('change', toggleTheme);
+    }
 }
 
 // Fetch Notes from Backend API
@@ -567,4 +578,41 @@ function exportFilteredNotesToCSV() {
     document.body.removeChild(link);
     
     showToast('CSV export downloaded!');
+}
+
+// Initialize Theme from Local Storage
+function initializeTheme() {
+    if (!themeToggle || !darkIcon || !lightIcon) return;
+    
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        themeToggle.checked = true;
+        document.body.classList.add('light-theme');
+        darkIcon.classList.remove('active');
+        lightIcon.classList.add('active');
+    } else {
+        themeToggle.checked = false;
+        document.body.classList.remove('light-theme');
+        darkIcon.classList.add('active');
+        lightIcon.classList.remove('active');
+    }
+}
+
+// Toggle page theme (dark <-> light mode)
+function toggleTheme() {
+    if (!themeToggle || !darkIcon || !lightIcon) return;
+    
+    if (themeToggle.checked) {
+        document.body.classList.add('light-theme');
+        darkIcon.classList.remove('active');
+        lightIcon.classList.add('active');
+        localStorage.setItem('theme', 'light');
+        showToast('Swapped to Light Theme');
+    } else {
+        document.body.classList.remove('light-theme');
+        darkIcon.classList.add('active');
+        lightIcon.classList.remove('active');
+        localStorage.setItem('theme', 'dark');
+        showToast('Swapped to Dark Theme');
+    }
 }
