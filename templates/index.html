@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Stay up-to-date with Google Cloud BigQuery Release Notes, filter updates, and share features directly to X/Twitter.">
+    <title>BigQuery Release Notes Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Glow Effects -->
+        <div class="glow-bg glow-1"></div>
+        <div class="glow-bg glow-2"></div>
+
+        <!-- Sidebar / Navigation -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-database"></i>
+                    <div class="logo-pulse"></div>
+                </div>
+                <div class="logo-text">
+                    <h1>BigQuery</h1>
+                    <span>Release Notes Hub</span>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span id="status-text">Feed Connected</span>
+                </div>
+                <div class="last-updated-time">
+                    Updated: <span id="update-timestamp">Never</span>
+                </div>
+                <button id="refresh-btn" class="btn btn-secondary" title="Refresh Release Notes">
+                    <i class="fa-solid fa-rotate-right btn-icon"></i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero Panel -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h2>Track GCP BigQuery Updates</h2>
+                <p>Browse the latest features, improvements, deprecations, and fixes. Select any update to craft and share the perfect developer tweet.</p>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Controls -->
+        <section class="dashboard-controls">
+            <!-- Search Control -->
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="search-input" placeholder="Search updates, keywords, dates...">
+                <button id="clear-search" class="clear-btn" style="display: none;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="filters-container">
+                <span class="filter-label">Filter by type:</span>
+                <div class="filter-pills" id="filter-pills-list">
+                    <button class="filter-pill active" data-type="all">
+                        All <span class="pill-count" id="count-all">0</span>
+                    </button>
+                    <!-- JavaScript will dynamically add other type pills with their counts -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline Container -->
+        <main class="timeline-container">
+            <!-- Loading State -->
+            <div class="loading-state" id="loading-state">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <div class="spinner-core"></div>
+                </div>
+                <p>Fetching BigQuery release notes...</p>
+            </div>
+
+            <!-- Error State -->
+            <div class="error-state" id="error-state" style="display: none;">
+                <div class="error-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3>Failed to load release notes</h3>
+                <p id="error-message">Unknown error occurred.</p>
+                <button id="retry-btn" class="btn btn-primary">Try Again</button>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </div>
+                <h3>No updates match your search</h3>
+                <p>Try clearing your search filters or searching for something else.</p>
+                <button id="reset-filters-btn" class="btn btn-primary">Reset Filters</button>
+            </div>
+
+            <!-- Timeline Elements -->
+            <div class="timeline" id="notes-timeline" style="display: none;">
+                <!-- Dynamically populated by app.js -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 BigQuery Release Notes Hub &bull; Crafted with Python Flask &amp; Vanilla Web Technologies</p>
+        </footer>
+    </div>
+
+    <!-- Twitter/X Share Modal -->
+    <div class="modal-overlay" id="tweet-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-brands fa-x-twitter x-logo"></i>
+                    <h3>Share Update to X</h3>
+                </div>
+                <button class="close-modal-btn" id="close-modal-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Selected Note Preview Info -->
+                <div class="selected-note-preview">
+                    <span class="preview-badge" id="modal-note-type">Feature</span>
+                    <span class="preview-date" id="modal-note-date">June 15, 2026</span>
+                </div>
+
+                <!-- Template Selector -->
+                <div class="template-selector">
+                    <span class="section-label">Select Template:</span>
+                    <div class="template-buttons">
+                        <button class="tmpl-btn active" data-template="standard">📢 Standard</button>
+                        <button class="tmpl-btn" data-template="short">⚡ Short</button>
+                        <button class="tmpl-btn" data-template="bullet">📝 Tech Details</button>
+                    </div>
+                </div>
+
+                <!-- Tweet Text Area -->
+                <div class="tweet-editor">
+                    <textarea id="tweet-textarea" rows="6" placeholder="What's happening?"></textarea>
+                </div>
+
+                <!-- Character Counter & Warning -->
+                <div class="tweet-status-row">
+                    <div class="character-counter">
+                        <svg class="progress-ring" width="36" height="36">
+                            <circle class="progress-ring__circle-bg" stroke="#1f2937" stroke-width="3" fill="transparent" r="14" cx="18" cy="18"/>
+                            <circle class="progress-ring__circle" id="char-progress-circle" stroke="#6366f1" stroke-width="3" fill="transparent" r="14" cx="18" cy="18"/>
+                        </svg>
+                        <span id="char-count">280</span>
+                    </div>
+                    <div class="character-warning" id="char-warning" style="display: none;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Exceeds standard 280-char limit</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="copy-tweet-btn">
+                    <i class="fa-regular fa-copy"></i>
+                    <span>Copy Text</span>
+                </button>
+                <button class="btn btn-primary btn-tweet" id="post-tweet-btn">
+                    <i class="fa-brands fa-x-twitter"></i>
+                    <span>Post to X</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast" style="display: none;">
+        <i class="fa-solid fa-circle-check toast-icon"></i>
+        <span class="toast-message" id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
